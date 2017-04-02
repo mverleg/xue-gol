@@ -4,7 +4,7 @@ $('document').ready(function() {
      Only start running when the document has fully loaded (except images).
      */
     var DEAD = 0, ALIVE = 1;
-    var FPS = 10;
+    var FPS = 7;
 
     function make_board(width, height) {
 
@@ -27,6 +27,27 @@ $('document').ready(function() {
     }
 
     /*
+    This function is called when a cell on the input board is clicked.
+    * `rownr`/`colnr`: this is the position of the the `td` cell which was clicked
+    * `event`: this is the event object, which all click functions get (it isn't used here)
+    * `board`: we can change the board without returning it, because it's an array (of arrays).
+     */
+    function deal_with_click(rownr, colnr, board, event) {
+        var cell_elem = $("#cell-" + rownr + "-" + colnr);
+        if (board[rownr][colnr] == ALIVE) {
+            console.log('ALIVE', cell_elem);
+            cell_elem.removeClass("alive");
+            cell_elem.addClass("dead");
+            board[rownr][colnr] = DEAD;
+        } else {
+            console.log('DEAD', cell_elem);
+            board[rownr][colnr] = ALIVE;
+            cell_elem.removeClass("dead");
+            cell_elem.addClass("alive");
+        }
+    }
+
+    /*
     Show a board of input cells, user can click to choose the initial state.
      */
     function show_input_board(board) {
@@ -35,11 +56,13 @@ $('document').ready(function() {
         for (var rownr = 0; rownr < board.length; rownr++) {
             var tr = $("<tr />");
             for (var colnr = 0; colnr < board[rownr].length; colnr++) {
-                var td = $("<td class='dead input' />");
+                /* Give each sell a unique id, so we can select it later when it's clicked. */
+                var td = $("<td id='cell-" + rownr + "-" + colnr + "' class='dead input' />");
                 tr.append(td);
-                td.click(function (rownr, colnr, event) {
-                    alert("clicked one! " + rownr + ', ' + colnr);
-                }.bind(null, rownr, colnr));
+                /* Here `bind` is used to attach the `td` cell to the function
+                 Note that this click event happens LATER, so `td` will already have changed,
+                 so we need to bind it. This is difficult, but later it's important (can skip now). */
+                td.click(deal_with_click.bind(null, rownr, colnr, board));
             }
             table.append(tr);
         }
@@ -153,13 +176,6 @@ $('document').ready(function() {
     var init_board = make_board(WIDTH, HEIGHT);
 
     show_input_board(init_board);
-
-    // board[1][1] = true;
-    // board[2][2] = true;
-    // board[2][3] = true;
-    // board[3][1] = true;
-    // board[3][2] = true;
-    // show_board(board);
 
     $('#start-game-button').click(function (event) {
         $('#start-game-button').remove();
