@@ -64,15 +64,43 @@ $('document').ready(function(){
         return counts;
     }
 
-    /*
-    Any live cell with fewer than two live neighbours dies, as if caused by underpopulation.
-    Any live cell with two or three live neighbours lives on to the next generation.
-    Any live cell with more than three live neighbours dies, as if by overpopulation.
-    Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.
-     */
+    function do_updates (board, counts) {
+        for (var rownr = 0; rownr < board.length; rownr++) {
+            for (var colnr = 0; colnr < board[rownr].length; colnr++) {
+                switch (counts[rownr][colnr]) {
+                    case 0:
+                    case 1:
+                        /* Any live cell with fewer than two live neighbours dies, as if caused by underpopulation. */
+                        board[rownr][colnr] = DEAD;
+                        break;
+                    case 2:
+                        /* Any live cell with two or three live neighbours lives on to the next generation. */
+                        break;
+                    case 3:
+                        /* Any live cell with two or three live neighbours lives on to the next generation. */
+                        /* Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction. */
+                        board[rownr][colnr] = ALIVE;
+                        break;
+                    case 4:
+                    case 5:
+                    case 6:
+                    case 7:
+                    case 8:
+                        /* Any live cell with more than three live neighbours dies, as if by overpopulation. */
+                        board[rownr][colnr] = DEAD;
+                        break;
+                    default:
+                        throw new Error("The number of neighbours is incorrect!");
+                }
+            }
+        }
+        return board;
+    }
+
     function do_step(board) {
         var counts = count_board(board);
-        // (later)
+        board = do_updates(board, counts);
+        return board;
     }
 
     var WIDTH = 12, HEIGHT = 10;
@@ -83,7 +111,7 @@ $('document').ready(function(){
     board[3][1] = true;
     board[3][2] = true;
     show_board(board);
-    do_step(board);
+    board = do_step(board);
     show_board(board);
 
     // var double_board = make_board(2 * WIDTH, 2 * HEIGHT);
