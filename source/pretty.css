@@ -4,10 +4,22 @@ body {
 }
 
 #game-area {
-	background-color: darkmagenta;
+	/*background-color: darkmagenta;*/
 	margin: 0 auto;  /* this will center the div */
 	height: 600px;
 	width: 600px;
 }
 
+#game-area td {
+	width: 40px;
+	height: 40px;
+}
+
+.alive {
+	background-color: forestgreen;
+}
+
+.dead {
+	background-color: maroon;
+}
 
