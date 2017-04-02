@@ -26,6 +26,28 @@ $('document').ready(function() {
         return board;
     }
 
+    /*
+    Show a board of input cells, user can click to choose the initial state.
+     */
+    function show_input_board(board) {
+        var table = $("#game-area");
+        table.empty();
+        for (var rownr = 0; rownr < board.length; rownr++) {
+            var tr = $("<tr />");
+            for (var colnr = 0; colnr < board[rownr].length; colnr++) {
+                var td = $("<td class='dead input' />");
+                tr.append(td);
+                td.click(function (rownr, colnr, event) {
+                    alert("clicked one! " + rownr + ', ' + colnr);
+                }.bind(null, rownr, colnr));
+            }
+            table.append(tr);
+        }
+    }
+
+    /*
+    Show a frame in the evolution of the game.
+     */
     function show_board(board) {
         var table = $("#game-area");
         table.empty();
@@ -40,6 +62,9 @@ $('document').ready(function() {
         }
     }
 
+    /*
+    Count all the neighbours of the board.
+     */
     function count_board(board) {
         if (board.length === 0) return null;
         var width = board[0].length;
@@ -81,6 +106,9 @@ $('document').ready(function() {
         return counts;
     }
 
+    /*
+    Based on the number of neighbours (`counts`), kill or create cells.
+     */
     function do_updates(board, counts) {
         for (var rownr = 0; rownr < board.length; rownr++) {
             for (var colnr = 0; colnr < board[rownr].length; colnr++) {
@@ -114,28 +142,29 @@ $('document').ready(function() {
         return board;
     }
 
-    function do_step(board) {
+    function step_and_show_repeat(board) {
         var counts = count_board(board);
         board = do_updates(board, counts);
-        return board;
-    }
-
-    function step_and_show_repeat() {
-        board = do_step(board);
         show_board(board);
-        setTimeout(step_and_show_repeat, 1000.0 / FPS);
+        setTimeout(step_and_show_repeat.bind(null, board), 1000.0 / FPS);
     }
 
     var WIDTH = 30, HEIGHT = 25;
-    var board = make_board(WIDTH, HEIGHT);
-    board[1][1] = true;
-    board[2][2] = true;
-    board[2][3] = true;
-    board[3][1] = true;
-    board[3][2] = true;
-    show_board(board);
+    var init_board = make_board(WIDTH, HEIGHT);
 
-    setTimeout(step_and_show_repeat, 1000.0 / FPS);
+    show_input_board(init_board);
+
+    // board[1][1] = true;
+    // board[2][2] = true;
+    // board[2][3] = true;
+    // board[3][1] = true;
+    // board[3][2] = true;
+    // show_board(board);
+
+    $('#start-game-button').click(function (event) {
+        $('#start-game-button').remove();
+        setTimeout(step_and_show_repeat.bind(null, init_board), 1000.0 / FPS);
+    });
 });
 
 
