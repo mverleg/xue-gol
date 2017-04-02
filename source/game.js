@@ -41,8 +41,27 @@ $('document').ready(function(){
 
     function count_board(board) {
         if (board.length === 0) return null;
-        var counts = make_board(board[0].length, board.length);
-        console.log(counts);
+        var width = board[0].length;
+        var height = board.length;
+        var counts = make_board(width, height);
+        for (var rownr = 0; rownr < board.length; rownr++) {
+            for (var colnr = 0; colnr < board[rownr].length; colnr++) {
+                /*
+                First check that a neighbour exists, then check whether it's alive and count it.
+                 */
+                var count = 0;
+                if (rownr > 0          && colnr > 0         && board[rownr - 1][colnr - 1] == ALIVE) { count += 1; } // top left
+                if (rownr > 0                               && board[rownr - 1][colnr    ] == ALIVE) { count += 1; } // top
+                if (rownr > 0          && colnr < width - 1 && board[rownr - 1][colnr + 1] == ALIVE) { count += 1; } // top right
+                if (                      colnr < width - 1 && board[rownr    ][colnr + 1] == ALIVE) { count += 1; } // right
+                if (rownr < height - 1 && colnr < width - 1 && board[rownr + 1][colnr + 1] == ALIVE) { count += 1; } // bottom right
+                if (rownr < height - 1                      && board[rownr + 1][colnr    ] == ALIVE) { count += 1; } // bottom
+                if (rownr < height - 1 && colnr > 0         && board[rownr + 1][colnr - 1] == ALIVE) { count += 1; } // bottom left
+                if (                      colnr > 0         && board[rownr    ][colnr - 1] == ALIVE) { count += 1; } // left
+                counts[rownr][colnr] = count;
+            }
+        }
+        return counts;
     }
 
     /*
