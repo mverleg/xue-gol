@@ -7,22 +7,20 @@ $('document').ready(function(){
 
     function make_board(width, height) {
 
-        var board = new Array(width);
+        var board = new Array(height);
 
         /*
-        This `for` loop will do stuff for each column.
-        It will create an Array to use as column, then it will fill the array with `false`s,
-        and finally it will insert the array as column into the `board`.
+        This `for` loop will do stuff for each row.
+        It will create an Array to use as row, then it will fill the array with `false`s,
+        and finally it will insert the array as row into the `board`.
          */
-        for (var colnr = 0; colnr < width; colnr++) {
+        for (var rownr = 0; rownr < height; rownr++) {
 
-            var column = new Array(height);
-
-            for (var cellnr = 0; cellnr < height; cellnr++) {
-                column[cellnr] = false;
+            var row = new Array(width);
+            for (var colnr = 0; colnr < width; colnr++) {
+                row[colnr] = false;
             }
-
-            board[colnr] = column;
+            board[rownr] = row;
         }
         return board;
     }
@@ -32,8 +30,9 @@ $('document').ready(function(){
         table.empty();
         for (var rownr = 0; rownr < board.length; rownr++) {
             var tr = $("<tr />");
-            for (var cellnr = 0; cellnr < board[rownr].length; cellnr++) {
-                var td = $("<td class='dead' />");
+            for (var colnr = 0; colnr < board[rownr].length; colnr++) {
+                var state = board[rownr][colnr] ? 'alive' : 'dead';
+                var td = $("<td class='" + state + "' />");
                 tr.append(td);
             }
             table.append(tr);
@@ -46,6 +45,7 @@ $('document').ready(function(){
 
     var WIDTH = 8, HEIGHT = 7;
     var board = make_board(WIDTH, HEIGHT);
+    board[1][2] = true;
     console.log(board);
     // console.log(board[5]);
     show_board(board);
