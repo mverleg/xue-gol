@@ -5,13 +5,13 @@ body {
 
 #content {
 	margin: 0 auto;  /* this will center the div */
-	width: 800px;
+	width: 1000px;
 }
 
 #game-area {
 	/*border-collapse: collapse;*/
 	width: 100%;
-	height: 800px;
+	height: 600px;
 }
 
 #game-area td {
@@ -44,6 +44,7 @@ body {
 .footer {
 	font-size: 75%;
 	color: gray;
+	word-wrap: break-word;
 }
 
 .footer a {

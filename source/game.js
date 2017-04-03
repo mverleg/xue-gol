@@ -1,6 +1,9 @@
 
 var DEAD = 0, ALIVE = 1;
 
+/*
+Create an 2D array to represent the board, and fill it with dead cells.
+ */
 function make_board(width, height) {
 
     var board = new Array(height);
@@ -182,19 +185,19 @@ function init_from_hash(board) {
         know everything. It is used to see if a string has a certain pattern. For example, in
         this case we want a string like "1,5" or "17,109".
         * `^` and `$` are the start and end of the string
-        * `\d` means any number (escaped `\\d`), and `+` means 'at least one',
-          so `\d+` means 'one or more numbers'
+        * `[-0-9]` means a minus sign or digit, and `+` means 'at least one',
+          so `[-0-9]+` means 'one or more (positive or negative) numbers'
         * `,` is just ',', so in total it says 'start with a number, then a comma, then another
           number at the end'
          */
-        var position_re = new RegExp('^\\d+,\\d+$', 'i');
+        var position_re = new RegExp('^[\\-0-9]+,[\\-0-9]+$', 'i');
         /*
         `window.location.hash` is the part of the url starting with #
-        `.slice(1)` gets all letters after 0, and `split('-')` splits
-        the text into a list at '-', e.g. "a-bcd-ef" => ["a", "bcd", "ef"]
+        `.slice(1)` gets all letters after 0, and `split('_')` splits
+        the text into a list at '_', e.g. "a-bcd-ef" => ["a", "bcd", "ef"]
          */
         var positions = [];
-        var parts = window.location.hash.slice(1).split('-');
+        var parts = window.location.hash.slice(1).split('_');
         parts.forEach(function(part) {
             if (! position_re.test(part)) {
                 console.log("Page hash not properly formatted ('" + part +
@@ -242,7 +245,7 @@ function create_board_str(board) {
             }
         }
     }
-    return position_texts.join('-');
+    return position_texts.join('_');
 }
 
 /*
@@ -251,24 +254,44 @@ Update the current hash (#) part of the domain to match the state of the board.
 function state_to_hash(board) {
     positions_text = create_board_str(board);
     window.location.hash = '#' + positions_text;
+    var ptrn_elem = $('#pattern-container');
+    ptrn_elem.empty();
+    var disp_text = positions_text;
+    if (disp_text.length > 100) {
+        disp_text = disp_text.substr(0, 100) + "...";
+    }
+    ptrn_elem.append("share: <a href='#" + positions_text + "'>#" + disp_text + "...</a>");
+}
+
+/*
+This starts the game, doing the first iteration with `step_and_show_repeat`,
+which will subsequently keep calling itself.
+ */
+function start_game (init_board, event) {
+    state_to_hash(init_board);
+    $('#start-game-button').remove();
+    setTimeout(step_and_show_repeat.bind(null, init_board, 1000.0 / FPS), 1000.0 / FPS);
 }
 
 $('document').ready(function() {
     /*
      Only start running when the document has fully loaded (except images).
      */
-    var FPS = 4;
-    var WIDTH = 45, HEIGHT = 40;
+    var FPS = 5;
+    var WIDTH = 50, HEIGHT = 30;
     var init_board = make_board(WIDTH, HEIGHT);
 
     show_input_board(init_board);
     init_from_hash(init_board);
 
-    $('#start-game-button').click(function (event) {
-        state_to_hash(init_board);
-        $('#start-game-button').remove();
-        setTimeout(step_and_show_repeat.bind(null, init_board, 1000.0 / FPS), 1000.0 / FPS);
-    });
+    $('#start-game-button').click(start_game.bind(null, init_board));
+    $(window).keypress(function(init_board, event) {
+        /* Can also press spacebar to start the game. */
+        if (event.which === 32) {
+            start_game(init_board);
+            return false;
+        }
+    }.bind(null, init_board));
 });
 
 
