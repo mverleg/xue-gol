@@ -259,7 +259,7 @@ Update the current hash (#) part of the domain to match the state of the board.
  */
 function state_to_hash(board) {
     positions_text = create_board_str(board);
-    window.location.hash = '#' + positions_text;
+    history.pushState(null, null, '#' + positions_text);
     var ptrn_elem = $('#pattern-container');
     ptrn_elem.empty();
     var disp_text = positions_text;
@@ -298,6 +298,10 @@ $("document").ready(function() {
             return false;
         }
     }.bind(null, init_board));
+
+    $(window).bind("hashchange", function(event) {
+        location.reload();
+    });
 });
 
 
