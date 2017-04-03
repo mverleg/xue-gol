@@ -180,6 +180,8 @@ This will look at the # part of the address, and try to load a board based on th
  */
 function init_from_hash(board) {
     if(window.location.hash) {
+        var width = board[0].length;
+        var height = board.length;
         /*
         Here we use a regular expression. It's useful to know a little about them, no need to
         know everything. It is used to see if a string has a certain pattern. For example, in
@@ -209,7 +211,11 @@ function init_from_hash(board) {
             then we convert "10" to 10 (number) and "7" to 7, and add it to list.
             */
             var indices = part.split(',');
-            positions.push([parseInt(indices[0]), parseInt(indices[1])]);
+            var rownr = parseInt(indices[0]);
+            if (rownr < 0) rownr = height + rownr;
+            var colnr = parseInt(indices[1]);
+            if (colnr < 0) colnr = width + colnr;
+            positions.push([rownr, colnr]);
         });
         positions_set_alive(board, positions);
     }
@@ -267,13 +273,13 @@ function state_to_hash(board) {
 This starts the game, doing the first iteration with `step_and_show_repeat`,
 which will subsequently keep calling itself.
  */
-function start_game (init_board, event) {
+function start_game (init_board, FPS, event) {
     state_to_hash(init_board);
     $('#start-game-button').remove();
     setTimeout(step_and_show_repeat.bind(null, init_board, 1000.0 / FPS), 1000.0 / FPS);
 }
 
-$('document').ready(function() {
+$("document").ready(function() {
     /*
      Only start running when the document has fully loaded (except images).
      */
@@ -284,11 +290,11 @@ $('document').ready(function() {
     show_input_board(init_board);
     init_from_hash(init_board);
 
-    $('#start-game-button').click(start_game.bind(null, init_board));
+    $('#start-game-button').click(start_game.bind(null, init_board, FPS));
     $(window).keypress(function(init_board, event) {
         /* Can also press spacebar to start the game. */
         if (event.which === 32) {
-            start_game(init_board);
+            start_game(init_board, FPS);
             return false;
         }
     }.bind(null, init_board));
